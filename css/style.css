@@ -1,0 +1,57 @@
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body {
+  margin: 0; height: 100%; overflow: hidden; background: #1b2a1b;
+  overscroll-behavior: none; touch-action: none;
+  -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
+  font-family: 'Press Start 2P', ui-monospace, Menlo, Consolas, monospace;
+}
+#stage { position: fixed; inset: 0; display: grid; place-items: center; overflow: hidden; }
+canvas { image-rendering: pixelated; image-rendering: crisp-edges; display: block; flex: none; }
+#vignette { position: fixed; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 60%, rgba(10,20,10,.32) 100%); }
+
+/* HUD */
+#hud { position: fixed; top: max(10px, env(safe-area-inset-top)); left: max(10px, env(safe-area-inset-left)); pointer-events: none; display: flex; flex-direction: column; gap: 6px; }
+#place, #coords, #hint, #toast {
+  background: rgba(38, 24, 14, .86); color: #f6e7c1; border: 3px solid #c89b5a;
+  box-shadow: 0 0 0 3px #3a2418, 3px 3px 0 3px rgba(0,0,0,.35);
+}
+#place { padding: 8px 10px; font-size: 10px; line-height: 1.4; }
+#coords { padding: 5px 8px; font-size: 7px; color: #cdb98a; align-self: flex-start; }
+
+#banner { position: fixed; left: 50%; top: 22%; transform: translate(-50%, -10px); opacity: 0; pointer-events: none;
+  color: #fff3c8; font-size: clamp(14px, 3.2vw, 26px); text-align: center; white-space: nowrap;
+  text-shadow: 3px 3px 0 #3a2418, -2px -2px 0 #3a2418, 2px -2px 0 #3a2418, -2px 2px 0 #3a2418; }
+#banner.show { animation: banner 3.6s ease forwards; }
+@keyframes banner { 0% { opacity: 0; transform: translate(-50%, -10px); } 12% { opacity: 1; transform: translate(-50%, 0); } 75% { opacity: 1; } 100% { opacity: 0; } }
+
+#toast { position: fixed; left: 50%; bottom: calc(max(26px, env(safe-area-inset-bottom)) + 4px); transform: translate(-50%, 20px);
+  padding: 10px 14px; font-size: 9px; line-height: 1.5; max-width: 86vw; text-align: center; opacity: 0; pointer-events: none; transition: .2s; }
+#toast.show { opacity: 1; transform: translate(-50%, 0); }
+body[data-input="touch"] #toast { bottom: auto; top: max(70px, calc(env(safe-area-inset-top) + 56px)); left: 50%; }
+
+#hint { position: fixed; left: 50%; top: max(10px, env(safe-area-inset-top)); transform: translateX(-50%);
+  padding: 8px 12px; font-size: 8px; line-height: 1.6; text-align: center; opacity: 0; pointer-events: none; transition: opacity .4s; max-width: 60vw; }
+#hint.show { opacity: 1; }
+#hint b { color: #ffd86a; font-weight: normal; }
+@media (max-width: 700px) { #hint { top: 92px; left: max(10px, env(safe-area-inset-left)); transform: none; max-width: 70vw; text-align: left; } #place { font-size: 8px; } }
+
+/* Controles de toque (só aparecem no celular) */
+#touch-ui { display: none; }
+body[data-input="touch"] #touch-ui { display: block; }
+#joy-zone { position: fixed; left: 0; bottom: 0; width: 62vw; height: 70vh; z-index: 5; touch-action: none; }
+#joy-base { position: fixed; width: 112px; height: 112px; margin: -56px 0 0 -56px; border-radius: 50%; z-index: 6; pointer-events: none;
+  background: radial-gradient(circle, rgba(255,243,200,.14) 0 55%, rgba(255,243,200,.22) 56% 100%);
+  border: 4px solid rgba(246, 231, 193, .5); box-shadow: 0 0 0 3px rgba(58,36,24,.5); opacity: .55; transition: opacity .15s; }
+#joy-base.active { opacity: 1; }
+#joy-knob { position: absolute; left: 50%; top: 50%; width: 52px; height: 52px; transform: translate(-50%,-50%); border-radius: 50%;
+  background: #f6e7c1; border: 4px solid #c89b5a; box-shadow: 0 0 0 3px #3a2418, inset -5px -5px 0 rgba(120,80,40,.35); }
+#btn-run { position: fixed; right: max(22px, env(safe-area-inset-right)); bottom: max(34px, env(safe-area-inset-bottom)); z-index: 6;
+  width: 84px; height: 84px; border-radius: 50%; font: 8px 'Press Start 2P', monospace; color: #f6e7c1; touch-action: none;
+  background: rgba(38,24,14,.7); border: 4px solid #c89b5a; box-shadow: 0 0 0 3px #3a2418; }
+#btn-run.active { background: #c89b5a; color: #3a2418; }
+
+#fade { position: fixed; inset: 0; background: #000; opacity: 0; pointer-events: none; transition: opacity .35s; z-index: 20; }
+#fade.on { opacity: 1; }
+#loading { position: fixed; inset: 0; z-index: 30; background: #1b2a1b; display: grid; place-items: center; color: #f6e7c1; font-size: 12px; transition: opacity .4s; }
+#loading.done { opacity: 0; pointer-events: none; }
